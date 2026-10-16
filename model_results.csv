@@ -1,0 +1,21 @@
+Factor,Column,Coefficient,OddsMultiplier,p_value
+Works overtime,OverTime_Yes,1.9021,6.6997,0.0
+Travels often (vs never),BusinessTravel_Travel_Frequently,1.8902,6.6207,0.0
+Sales Representative,JobRole_Sales Representative,1.6868,5.4019,0.0
+HR job role,JobRole_Human Resources,1.2701,3.5612,0.0024
+Single (vs married),MaritalStatus_Single,1.1377,3.1196,0.0
+Laboratory Technician,JobRole_Laboratory Technician,1.0957,2.9912,0.0
+Travels sometimes (vs never),BusinessTravel_Travel_Rarely,1.0518,2.8629,0.0042
+Technical degree,EducationField_Technical Degree,0.8663,2.378,0.0014
+Sales Executive,JobRole_Sales Executive,0.8088,2.2451,0.0004
+Years since last promotion,YearsSinceLastPromotion,0.1852,1.2035,0.0
+Number of past employers,NumCompaniesWorked,0.1611,1.1748,0.0
+Distance from home (miles),DistanceFromHome,0.0431,1.0441,0.0
+Total years working,TotalWorkingYears,-0.0917,0.9124,0.0
+Years in current role,YearsInCurrentRole,-0.1305,0.8776,0.0004
+Trainings last year,TrainingTimesLastYear,-0.205,0.8146,0.0039
+Relationship satisfaction (1-4),RelationshipSatisfaction,-0.2399,0.7867,0.0026
+Work-life balance (1-4),WorkLifeBalance,-0.3726,0.689,0.002
+Job satisfaction (1-4),JobSatisfaction,-0.404,0.6676,0.0
+Environment satisfaction (1-4),EnvironmentSatisfaction,-0.423,0.6551,0.0
+Job involvement (1-4),JobInvolvement,-0.5664,0.5676,0.0
