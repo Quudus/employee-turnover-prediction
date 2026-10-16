@@ -74,7 +74,7 @@ cols = order
 PLAIN = {
     "OverTime_Yes": "Works overtime", "BusinessTravel_Travel_Frequently": "Travels often (vs never)",
     "BusinessTravel_Travel_Rarely": "Travels sometimes (vs never)", "JobRole_Sales Representative": "Sales Representative",
-    "JobRole_Human Resources": "HR job role", "MaritalStatus_Single": "Single (vs married)",
+    "JobRole_Human Resources": "HR job role", "MaritalStatus_Single": "Single (vs divorced)",
     "JobRole_Laboratory Technician": "Laboratory Technician", "EducationField_Technical Degree": "Technical degree",
     "JobRole_Sales Executive": "Sales Executive", "YearsSinceLastPromotion": "Years since last promotion",
     "NumCompaniesWorked": "Number of past employers", "DistanceFromHome": "Distance from home (miles)",
