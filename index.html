@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Employee Turnover Prediction</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+ 
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --fg: #191816;
+  --fg-muted: #6a6560;
+  --accent: #1d3f8a;
+  --accent-lt: #eef2fc;
+  --border: #e2dfd8;
+  --sig: #166534;
+  --sig-bg: #f0fdf4;
+  --sig-bd: #86efac;
+  --ns: #6b7280;
+  --ns-bg: #f3f4f6;
+  --ns-bd: #d1d5db;
+}
+ 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111009;
+    --surface: #1b1a17;
+    --fg: #f0ece3;
+    --fg-muted: #96908a;
+    --accent: #7096e8;
+    --accent-lt: #1a2540;
+    --border: #2c2a25;
+    --sig: #4ade80;
+    --sig-bg: #052e16;
+    --sig-bd: #166534;
+    --ns: #6b7280;
+    --ns-bg: #1b1a17;
+    --ns-bd: #374151;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111009;
+  --surface: #1b1a17;
+  --fg: #f0ece3;
+  --fg-muted: #96908a;
+  --accent: #7096e8;
+  --accent-lt: #1a2540;
+  --border: #2c2a25;
+  --sig: #4ade80;
+  --sig-bg: #052e16;
+  --sig-bd: #166534;
+  --ns: #6b7280;
+  --ns-bg: #1b1a17;
+  --ns-bd: #374151;
+  color-scheme: dark;
+}
+ 
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+ 
+.page { max-width: 880px; margin: 0 auto; }
+ 
+.display {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(2rem, 5.5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+ 
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 1.2rem;
+}
+ 
+p { max-width: 64ch; }
+p + p { margin-top: 0.85rem; }
+strong { font-weight: 600; }
+ 
+.header {
+  padding: 3.5rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2.5rem;
+}
+ 
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.2rem;
+  margin-bottom: 1.4rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+ 
+.meta-sep { opacity: 0.4; }
+ 
+.tagline {
+  margin-top: 1.1rem;
+  font-size: 1rem;
+  color: var(--fg-muted);
+  max-width: 60ch;
+  line-height: 1.6;
+}
+ 
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--border);
+  gap: 1px;
+  margin-bottom: 3rem;
+}
+ 
+@media (max-width: 560px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+ 
+.stat-cell {
+  background: var(--surface);
+  padding: 1.2rem 1.3rem;
+}
+ 
+.stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 0.35rem;
+  font-variant-numeric: tabular-nums;
+}
+ 
+.stat-lbl {
+  font-size: 0.72rem;
+  color: var(--fg-muted);
+  line-height: 1.3;
+}
+ 
+.section {
+  padding-bottom: 2.75rem;
+  margin-bottom: 2.75rem;
+  border-bottom: 1px solid var(--border);
+}
+ 
+.section:last-of-type { border-bottom: none; }
+ 
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+ 
+@media (max-width: 620px) {
+  .two-col { grid-template-columns: 1fr; gap: 2rem; }
+}
+ 
+/* PIPELINE */
+.pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 1.2rem;
+}
+ 
+.pipe-step {
+  flex: 1;
+  min-width: 80px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.55rem 0.8rem;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+ 
+.pipe-step span {
+  display: block;
+  font-weight: 400;
+  font-size: 0.68rem;
+  color: var(--fg-muted);
+  margin-top: 0.15rem;
+}
+ 
+.pipe-arr {
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+  padding: 0 0.25rem;
+  flex-shrink: 0;
+}
+ 
+.pipe-note {
+  font-size: 0.82rem;
+  color: var(--fg-muted);
+}
+ 
+/* FACTOR LIST */
+.factor-list { display: flex; flex-direction: column; gap: 0.5rem; }
+ 
+.fitem {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+}
+ 
+.fname {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+ 
+.fdir {
+  font-size: 0.72rem;
+  color: var(--fg-muted);
+  margin-top: 0.1rem;
+}
+ 
+.badge {
+  display: inline-block;
+  padding: 0.18rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+ 
+.badge.risk {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+ 
+.badge.protect {
+  background: var(--sig-bg);
+  color: var(--sig);
+  border: 1px solid var(--sig-bd);
+}
+ 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .badge.risk {
+    background: #2a0a0a;
+    color: #f87171;
+    border-color: #7f1d1d;
+  }
+}
+ 
+/* FINDING BOX */
+.finding {
+  background: var(--accent-lt);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 1.4rem 1.75rem;
+  margin-bottom: 1.25rem;
+}
+ 
+.finding-stat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+ 
+.finding p {
+  color: var(--fg);
+  font-size: 0.9rem;
+  max-width: 58ch;
+}
+ 
+.finding-sub {
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  max-width: 62ch;
+}
+ 
+/* CONTRIB */
+.contrib-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+ 
+.contrib-list li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 0.7rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  align-items: start;
+}
+ 
+.cbullet {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  background: var(--accent-lt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+ 
+.cbullet::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+ 
+/* TOOLS */
+.tools { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+ 
+.tool {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--fg-muted);
+  background: var(--surface);
+}
+ 
+/* FOOTER */
+.footer {
+  padding: 2rem 0 3rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.73rem;
+  color: var(--fg-muted);
+}
+ 
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="page">
+ 
+  <header class="header">
+    <div class="meta-row">
+      <span>IBM HR Attrition Dataset</span>
+      <span class="meta-sep">·</span>
+      <span>2024</span>
+      <span class="meta-sep">·</span>
+      <span>Quudus Oladosu</span>
+    </div>
+    <h1 class="display">Employee Turnover<br>Prediction</h1>
+    <p class="tagline">Logistic regression on 1,470 IBM HR records to identify which employees are most likely to leave — built in Python with backward elimination, reproduced in Excel.</p>
+  </header>
+ 
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="stat-num">1,470</div>
+      <div class="stat-lbl">Employees in the dataset</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">20</div>
+      <div class="stat-lbl">Significant predictors selected</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">0.85</div>
+      <div class="stat-lbl">AUC on held-out test set</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">70%</div>
+      <div class="stat-lbl">Leavers caught at 30% cutoff</div>
+    </div>
+  </div>
+ 
+  <!-- OVERVIEW -->
+  <div class="section">
+    <div class="section-label">Project Overview</div>
+    <div class="two-col">
+      <div>
+        <p><strong>Goal:</strong> Predict which employees are at risk of leaving so HR can intervene before attrition happens. The dataset comes from IBM's publicly released HR Analytics sample — 1,470 employees, 35 original features, 16.1% attrition rate.</p>
+        <p>Starting with all 44 candidate predictors (after encoding), the model used <strong>backward elimination</strong> — dropping the least significant variable one at a time — until only factors with p &lt; 0.01 remained. The final model uses 20 predictors.</p>
+        <p>Performance was evaluated on a held-out 20% test set. At a 30% probability cutoff, the model catches 70% of actual leavers while keeping false alarms manageable — a practical threshold for HR screening.</p>
+      </div>
+      <div>
+        <p><strong>Why logistic regression?</strong> It produces a probability score (0–1) for each employee, not just a yes/no label. That means HR can rank employees by risk level, set their own threshold based on capacity to intervene, and explain the decision using actual coefficients — something black-box models can't do.</p>
+        <p style="margin-top:0.85rem;">The analysis was also reproduced in Excel to make results accessible to non-technical stakeholders and verify that the Python output held up under a different implementation.</p>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- PIPELINE -->
+  <div class="section">
+    <div class="section-label">Data Pipeline</div>
+    <div class="pipeline">
+      <div class="pipe-step">Kaggle<span>Raw IBM HR CSV</span></div>
+      <div class="pipe-arr">→</div>
+      <div class="pipe-step">Python<span>Clean + encode</span></div>
+      <div class="pipe-arr">→</div>
+      <div class="pipe-step">Backward elim.<span>44 → 20 factors</span></div>
+      <div class="pipe-arr">→</div>
+      <div class="pipe-step">Logit model<span>Train / test split</span></div>
+      <div class="pipe-arr">→</div>
+      <div class="pipe-step">Excel<span>Reproduced output</span></div>
+    </div>
+    <p class="pipe-note">Preprocessing: one-hot encoding for categoricals, dropped constants (EmployeeCount, StandardHours, Over18). Train/test split: 80/20 stratified on the target variable to preserve the class imbalance.</p>
+  </div>
+ 
+  <!-- TOP FACTORS -->
+  <div class="section">
+    <div class="section-label">Top Predictors</div>
+    <p style="margin-bottom:1.25rem;font-size:0.88rem;color:var(--fg-muted);">20 factors survived backward elimination at p &lt; 0.01. A selection of the most actionable ones:</p>
+    <div class="factor-list">
+ 
+      <div class="fitem">
+        <div>
+          <div class="fname">OverTime</div>
+          <div class="fdir">Working overtime → strongly increases attrition risk</div>
+        </div>
+        <span class="badge risk">Risk factor</span>
+      </div>
+ 
+      <div class="fitem">
+        <div>
+          <div class="fname">JobSatisfaction</div>
+          <div class="fdir">Higher satisfaction → significantly reduces attrition risk</div>
+        </div>
+        <span class="badge protect">Protective</span>
+      </div>
+ 
+      <div class="fitem">
+        <div>
+          <div class="fname">EnvironmentSatisfaction</div>
+          <div class="fdir">Happier with work environment → lower likelihood of leaving</div>
+        </div>
+        <span class="badge protect">Protective</span>
+      </div>
+ 
+      <div class="fitem">
+        <div>
+          <div class="fname">YearsWithCurrManager</div>
+          <div class="fdir">Longer tenure under same manager → lower attrition</div>
+        </div>
+        <span class="badge protect">Protective</span>
+      </div>
+ 
+      <div class="fitem">
+        <div>
+          <div class="fname">MaritalStatus (Single)</div>
+          <div class="fdir">Single employees leave at higher rates than married counterparts</div>
+        </div>
+        <span class="badge risk">Risk factor</span>
+      </div>
+ 
+      <div class="fitem">
+        <div>
+          <div class="fname">NumCompaniesWorked</div>
+          <div class="fdir">More prior employers → higher propensity to leave again</div>
+        </div>
+        <span class="badge risk">Risk factor</span>
+      </div>
+ 
+      <div class="fitem">
+        <div>
+          <div class="fname">StockOptionLevel</div>
+          <div class="fdir">Equity compensation is a strong retention lever</div>
+        </div>
+        <span class="badge protect">Protective</span>
+      </div>
+ 
+    </div>
+    <p style="margin-top:1rem;font-size:0.78rem;color:var(--fg-muted);">Full list of all 20 factors with coefficients and p-values available in <a href="model_results.csv">model_results.csv</a>.</p>
+  </div>
+ 
+  <!-- KEY FINDING -->
+  <div class="section">
+    <div class="section-label">Key Finding</div>
+    <div class="finding">
+      <div class="finding-stat">AUC = 0.85 &nbsp;·&nbsp; 70% recall</div>
+      <p>At a 30% probability cutoff, the model correctly identifies 70% of employees who actually leave — while the baseline rate in the data is only 16.1%. That's a 4x improvement in targeting efficiency compared to random screening.</p>
+    </div>
+    <p class="finding-sub">OverTime is the single strongest predictor: employees who work overtime are significantly more likely to leave, all else equal. Satisfaction variables (job, environment, relationship) consistently act as buffers. The Excel reproduction matched the Python output on all major coefficients, validating the approach across both implementations.</p>
+  </div>
+ 
+  <!-- CONTRIBUTIONS -->
+  <div class="section">
+    <div class="section-label">What I Did</div>
+    <ul class="contrib-list">
+      <li>
+        <span class="cbullet"></span>
+        <span>Cleaned and preprocessed the raw Kaggle dataset — dropped constant columns, applied one-hot encoding to categoricals, and performed a stratified 80/20 train/test split</span>
+      </li>
+      <li>
+        <span class="cbullet"></span>
+        <span>Built the backward elimination loop in Python: starting from 44 predictors, iteratively dropping the highest p-value variable each round until all remaining factors were significant at p &lt; 0.01</span>
+      </li>
+      <li>
+        <span class="cbullet"></span>
+        <span>Evaluated model performance using AUC, confusion matrix, and precision/recall at multiple probability cutoffs to find a practical threshold for HR use</span>
+      </li>
+      <li>
+        <span class="cbullet"></span>
+        <span>Reproduced the full analysis in Excel — logistic regression via Solver, coefficient table, and probability scoring — to make results accessible to non-technical stakeholders</span>
+      </li>
+    </ul>
+  </div>
+ 
+  <!-- TOOLS -->
+  <div class="section">
+    <div class="section-label">Tools &amp; Skills</div>
+    <div class="tools">
+      <span class="tool">Python</span>
+      <span class="tool">pandas</span>
+      <span class="tool">scikit-learn</span>
+      <span class="tool">statsmodels</span>
+      <span class="tool">Excel (Solver)</span>
+      <span class="tool">Logistic Regression</span>
+      <span class="tool">Backward Elimination</span>
+      <span class="tool">ROC / AUC</span>
+      <span class="tool">Confusion Matrix</span>
+      <span class="tool">One-Hot Encoding</span>
+      <span class="tool">Stratified Sampling</span>
+      <span class="tool">HR Analytics</span>
+    </div>
+  </div>
+ 
+  <footer class="footer">
+    <span>Quudus Oladosu · MS Business Analytics, Temple University</span>
+    <span><a href="https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset">Data: IBM HR Analytics — Kaggle</a></span>
+  </footer>
+ 
+</div>
+</body>
+</html>
+ 
