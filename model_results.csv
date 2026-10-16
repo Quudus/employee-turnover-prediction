@@ -3,7 +3,7 @@ Works overtime,OverTime_Yes,1.9021,6.6997,0.0
 Travels often (vs never),BusinessTravel_Travel_Frequently,1.8902,6.6207,0.0
 Sales Representative,JobRole_Sales Representative,1.6868,5.4019,0.0
 HR job role,JobRole_Human Resources,1.2701,3.5612,0.0024
-Single (vs married),MaritalStatus_Single,1.1377,3.1196,0.0
+Single (vs divorced),MaritalStatus_Single,1.1377,3.1196,0.0
 Laboratory Technician,JobRole_Laboratory Technician,1.0957,2.9912,0.0
 Travels sometimes (vs never),BusinessTravel_Travel_Rarely,1.0518,2.8629,0.0042
 Technical degree,EducationField_Technical Degree,0.8663,2.378,0.0014
