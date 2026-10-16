@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Employee Turnover Prediction</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#f5f4f0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
  
@@ -417,7 +417,7 @@ a:hover { text-decoration: underline; }
       <div>
         <p><strong>Goal:</strong> Predict which employees are at risk of leaving so HR can intervene before attrition happens. The dataset comes from IBM's publicly released HR Analytics sample — 1,470 employees, 35 original features, 16.1% attrition rate.</p>
         <p>Starting with all 44 candidate predictors (after encoding), the model used <strong>backward elimination</strong> — dropping the least significant variable one at a time — until only factors with p &lt; 0.01 remained. The final model uses 20 predictors.</p>
-        <p>Performance was evaluated on a held-out 20% test set. At a 30% probability cutoff, the model catches 70% of actual leavers while keeping false alarms manageable — a practical threshold for HR screening.</p>
+        <p>Performance was evaluated on a held-out 30% test set. At a 30% probability cutoff, the model catches 70% of actual leavers while keeping false alarms manageable — a practical threshold for HR screening.</p>
       </div>
       <div>
         <p><strong>Why logistic regression?</strong> It produces a probability score (0–1) for each employee, not just a yes/no label. That means HR can rank employees by risk level, set their own threshold based on capacity to intervene, and explain the decision using actual coefficients — something black-box models can't do.</p>
@@ -440,7 +440,7 @@ a:hover { text-decoration: underline; }
       <div class="pipe-arr">→</div>
       <div class="pipe-step">Excel<span>Reproduced output</span></div>
     </div>
-    <p class="pipe-note">Preprocessing: one-hot encoding for categoricals, dropped constants (EmployeeCount, StandardHours, Over18). Train/test split: 80/20 stratified on the target variable to preserve the class imbalance.</p>
+    <p class="pipe-note">Preprocessing: one-hot encoding for categoricals, dropped constants (EmployeeCount, StandardHours, Over18). Train/test split: 70/30 stratified on the target variable to preserve the class imbalance.</p>
   </div>
  
   <!-- TOP FACTORS -->
@@ -475,8 +475,8 @@ a:hover { text-decoration: underline; }
  
       <div class="fitem">
         <div>
-          <div class="fname">YearsWithCurrManager</div>
-          <div class="fdir">Longer tenure under same manager → lower attrition</div>
+          <div class="fname">WorkLifeBalance</div>
+          <div class="fdir">Better work-life balance is linked to a lower likelihood of leaving</div>
         </div>
         <span class="badge protect">Protective</span>
       </div>
@@ -499,8 +499,8 @@ a:hover { text-decoration: underline; }
  
       <div class="fitem">
         <div>
-          <div class="fname">StockOptionLevel</div>
-          <div class="fdir">Equity compensation is a strong retention lever</div>
+          <div class="fname">JobInvolvement</div>
+          <div class="fdir">More involved employees leave far less often (about 43% lower odds per point on the 1-4 scale)</div>
         </div>
         <span class="badge protect">Protective</span>
       </div>
@@ -514,7 +514,7 @@ a:hover { text-decoration: underline; }
     <div class="section-label">Key Finding</div>
     <div class="finding">
       <div class="finding-stat">AUC = 0.85 &nbsp;·&nbsp; 70% recall</div>
-      <p>At a 30% probability cutoff, the model correctly identifies 70% of employees who actually leave — while the baseline rate in the data is only 16.1%. That's a 4x improvement in targeting efficiency compared to random screening.</p>
+      <p>At a 30% probability cutoff, the model correctly identifies 70% of employees who actually leave. For context, 16.1% of all employees in the data left.</p>
     </div>
     <p class="finding-sub">OverTime is the single strongest predictor: employees who work overtime are significantly more likely to leave, all else equal. Satisfaction variables (job, environment, relationship) consistently act as buffers. The Excel reproduction matched the Python output on all major coefficients, validating the approach across both implementations.</p>
   </div>
@@ -525,7 +525,7 @@ a:hover { text-decoration: underline; }
     <ul class="contrib-list">
       <li>
         <span class="cbullet"></span>
-        <span>Cleaned and preprocessed the raw Kaggle dataset — dropped constant columns, applied one-hot encoding to categoricals, and performed a stratified 80/20 train/test split</span>
+        <span>Cleaned and preprocessed the raw Kaggle dataset — dropped constant columns, applied one-hot encoding to categoricals, and performed a stratified 70/30 train/test split</span>
       </li>
       <li>
         <span class="cbullet"></span>
